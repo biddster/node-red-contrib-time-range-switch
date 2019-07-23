@@ -28,6 +28,7 @@ module.exports = function(RED) {
 
     const SunCalc = require('suncalc');
     const moment = require('moment');
+    const mustache = require("mustache");
     require('twix');
     const fmt = 'YYYY-MM-DD HH:mm';
 
@@ -36,36 +37,42 @@ module.exports = function(RED) {
 
         this.on('input', msg => {
             const now = this.now();
-            const start = momentFor(config.startTime, now);
-            if (config.startOffset) {
-                start.add(config.startOffset, 'minutes');
+            const data = dataobject(this.context(), msg);
+            const startTime = mustache.render(config.startTime.toString(), data);
+            const startMoment = momentFor(startTime, now);
+            const endTime = mustache.render(config.endTime.toString(), data);
+            const endMoment = momentFor(endTime, now);
+            const startOffset = mustache.render(config.startOffset.toString(), data);
+            const endOffset = mustache.render(config.endOffset.toString(), data);
+            
+            if(startOffset) {
+                startMoment.add(startOffset, 'minutes');
             }
-            const end = momentFor(config.endTime, now);
-            if (config.endOffset) {
-                end.add(config.endOffset, 'minutes');
+            if (endOffset) {
+                endMoment.add(endOffset, 'minutes');
             }
             // align end to be before AND within 24 hours of start
-            while (end.diff(start, 'seconds') < 0) {
+            while (endMoment.diff(startMoment, 'seconds') < 0) {
                 // end before start
-                end.add(1, 'day');
+                endMoment.add(1, 'day');
             }
-            while (end.diff(start, 'seconds') > 86400) {
+            while (endMoment.diff(startMoment, 'seconds') > 86400) {
                 // end more than day before start
-                end.subtract(1, 'day');
+                endMoment.subtract(1, 'day');
             }
             // move start and end window to be within a day of now
-            while (end.diff(now, 'seconds') < 0) {
+            while (endMoment.diff(now, 'seconds') < 0) {
                 // end before now
-                start.add(1, 'day');
-                end.add(1, 'day');
+                startMoment.add(1, 'day');
+                endMoment.add(1, 'day');
             }
-            while (end.diff(now, 'seconds') > 86400) {
+            while (endMoment.diff(now, 'seconds') > 86400) {
                 // end more than day from now
-                start.subtract(1, 'day');
-                end.subtract(1, 'day');
+                startMoment.subtract(1, 'day');
+                endMoment.subtract(1, 'day');
             }
 
-            const range = moment.twix(start, end);
+            const range = moment.twix(startMoment, endMoment);
             const output = range.contains(now) ? 1 : 2;
             const msgs = [];
             msgs[output - 1] = msg;
@@ -99,6 +106,22 @@ module.exports = function(RED) {
                 this.status({ fill: 'red', shape: 'dot', text: `Invalid time: ${time}` });
             }
             return m;
+        };
+
+        const dataobject = (context, msg) => {
+            var data = {}
+            data.msg = msg;
+            data.global = {};
+            data.flow = {};
+            var globalKeys = context.global.keys();
+            var flowKeys = context.flow.keys();
+            for (var key in globalKeys){
+                data.global[globalKeys[key]] = context.global.get(globalKeys[key]);
+            };
+            for (var key in flowKeys){
+                data.flow[flowKeys[key]] = context.flow.get(flowKeys[key]);
+            };
+            return data
         };
 
         this.now = function() {

@@ -17,6 +17,7 @@
     "license": "MIT",
     "dependencies": {
         "moment": "^2.12.0",
+        "mustache": "^2.3.2",
         "suncalc": "^1.7.0",
         "twix": "^0.9.0"
     },
