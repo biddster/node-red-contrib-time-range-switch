@@ -11,7 +11,7 @@
         "sun events"
     ],
     "scripts": {
-        "test": "nyc --reporter=html mocha -R spec ./tests/test.js"
+        "test": "nyc --reporter=html mocha"
     },
     "author": "@biddster",
     "license": "MIT",
