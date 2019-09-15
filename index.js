@@ -27,8 +27,8 @@ module.exports = function(RED) {
     'use strict';
 
     const SunCalc = require('suncalc');
-    const moment = require('moment');
-    require('twix');
+    const MomentRange = require('moment-range');
+    const moment = MomentRange.extendMoment(require('moment'));
     const fmt = 'YYYY-MM-DD HH:mm';
 
     RED.nodes.registerType('time-range-switch', function(config) {
@@ -65,7 +65,7 @@ module.exports = function(RED) {
                 end.subtract(1, 'day');
             }
 
-            const range = moment.twix(start, end);
+            const range = moment.range(start, end);
             const output = range.contains(now) ? 1 : 2;
             const msgs = [];
             msgs[output - 1] = msg;
@@ -73,7 +73,7 @@ module.exports = function(RED) {
             this.status({
                 fill: 'green',
                 shape: output === 1 ? 'dot' : 'ring',
-                text: range.simpleFormat(fmt)
+                text: `${start.format(fmt)} - ${end.format(fmt)}`
             });
         });
 

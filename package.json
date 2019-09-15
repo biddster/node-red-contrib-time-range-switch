@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-time-range-switch",
-    "version": "0.6.2",
+    "version": "0.6.3",
     "description": "",
     "main": "index.js",
     "keywords": [
@@ -17,8 +17,8 @@
     "license": "MIT",
     "dependencies": {
         "moment": "^2.24.0",
-        "suncalc": "^1.8.0",
-        "twix": "0.9.0"
+        "moment-range": "^4.0.2",
+        "suncalc": "^1.8.0"
     },
     "node-red": {
         "nodes": {
@@ -33,14 +33,14 @@
         "url": "https://github.com/biddster/node-red-contrib-time-range-switch/issues"
     },
     "devDependencies": {
-        "eslint": "^5.13.0",
-        "eslint-config-airbnb-base": "^13.1.0",
-        "eslint-config-prettier": "^4.0.0",
-        "eslint-plugin-import": "^2.16.0",
-        "mocha": "^5.2.0",
+        "eslint": "^6.3.0",
+        "eslint-config-airbnb-base": "^14.0.0",
+        "eslint-config-prettier": "^6.3.0",
+        "eslint-plugin-import": "^2.18.2",
+        "mocha": "^6.2.0",
         "node-red-contrib-mock-node": "^0.4.0",
-        "nyc": "^13.1.0",
-        "prettier": "^1.16.3"
+        "nyc": "^14.1.1",
+        "prettier": "^1.18.2"
     },
     "eslintConfig": {
         "env": {
